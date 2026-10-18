@@ -1,6 +1,6 @@
 {
   "name": "ServerConfigSync",
-  "version_number": "0.1.2",
+  "version_number": "0.1.3",
   "website_url": "https://github.com/peppeaiello/ServerConfigSync",
   "description": "Server-enforced settings for any mod: players use the server's BepInEx config values while connected, without mod authors adding sync support. Players' own config files are never changed.",
   "dependencies": [

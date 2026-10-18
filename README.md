@@ -19,7 +19,7 @@ Players without the mod can still join, they just keep their own settings, unles
 
 ## Configuration
 
-The settings are in `BepInEx/config/peppeaiello.ServerConfigSync.cfg`. The server only reads the `Server` section and players only read the `Client` section.
+The settings are in `BepInEx/config/Manke.ServerConfigSync.cfg`. The server only reads the `Server` section and players only read the `Client` section.
 
 ### Server
 

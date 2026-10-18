@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- The plugin GUID is now `Manke.ServerConfigSync`, so the settings file is `BepInEx/config/Manke.ServerConfigSync.cfg`. Settings in the old `peppeaiello.ServerConfigSync.cfg` are carried over automatically the first time.
+
 ## 0.1.2
 
 - Documentation only: clearer README and changelog. No code changes.

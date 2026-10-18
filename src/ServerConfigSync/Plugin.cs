@@ -17,9 +17,12 @@ namespace ServerConfigSync
     [BepInPlugin(Guid, Name, Version)]
     public class Plugin : BaseUnityPlugin
     {
-        public const string Guid = "peppeaiello.ServerConfigSync";
+        public const string Guid = "Manke.ServerConfigSync";
         public const string Name = "ServerConfigSync";
-        public const string Version = "0.1.2";
+        public const string Version = "0.1.3";
+
+        // GUID used up to 0.1.2; its config file is carried over once.
+        private const string OldGuid = "peppeaiello.ServerConfigSync";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
@@ -49,6 +52,7 @@ namespace ServerConfigSync
         {
             Instance = this;
             Log = Logger;
+            MigrateOldConfig();
 
             const string server = "1 - Server";
             ServerEnabled = Config.Bind(server, "Enabled", true,
@@ -84,6 +88,22 @@ namespace ServerConfigSync
             _harmony = new Harmony(Guid);
             _harmony.PatchAll(typeof(Plugin).Assembly);
             Log.LogInfo($"{Name} {Version} loaded");
+        }
+
+        private void MigrateOldConfig()
+        {
+            try
+            {
+                string oldPath = Path.Combine(Paths.ConfigPath, OldGuid + ".cfg");
+                if (File.Exists(Config.ConfigFilePath) || !File.Exists(oldPath)) return;
+                File.Copy(oldPath, Config.ConfigFilePath);
+                Config.Reload();
+                Log.LogInfo($"Settings carried over from {OldGuid}.cfg to {Path.GetFileName(Config.ConfigFilePath)}; the old file is no longer used.");
+            }
+            catch (Exception e)
+            {
+                Log.LogWarning($"Could not carry over the settings from {OldGuid}.cfg: {e.Message}");
+            }
         }
 
         private void Update()
