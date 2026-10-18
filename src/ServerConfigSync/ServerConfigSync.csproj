@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>ServerConfigSync</AssemblyName>
+    <RootNamespace>ServerConfigSync</RootNamespace>
+    <Version>0.1.0</Version>
+    <LangVersion>latest</LangVersion>
+    <Nullable>disable</Nullable>
+    <Deterministic>true</Deterministic>
+    <DebugType>embedded</DebugType>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <!--
+    Path to a Valheim install (client or dedicated server) with BepInEx.
+    Override with: dotnet build -p:ValheimDir=/path/to/Valheim
+  -->
+  <PropertyGroup>
+    <ValheimDir Condition="'$(ValheimDir)' == ''">/DATA/AppData/valheim-gale/server</ValheimDir>
+    <ValheimManaged Condition="Exists('$(ValheimDir)/valheim_server_Data/Managed')">$(ValheimDir)/valheim_server_Data/Managed</ValheimManaged>
+    <ValheimManaged Condition="'$(ValheimManaged)' == ''">$(ValheimDir)/valheim_Data/Managed</ValheimManaged>
+    <BepInExCore>$(ValheimDir)/BepInEx/core</BepInExCore>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="ServerConfigSync.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="BepInEx" HintPath="$(BepInExCore)/BepInEx.dll" Private="false" />
+    <Reference Include="0Harmony" HintPath="$(BepInExCore)/0Harmony.dll" Private="false" />
+    <Reference Include="assembly_valheim" HintPath="$(ValheimManaged)/assembly_valheim.dll" Private="false" />
+    <Reference Include="assembly_utils" HintPath="$(ValheimManaged)/assembly_utils.dll" Private="false" />
+    <Reference Include="UnityEngine" HintPath="$(ValheimManaged)/UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(ValheimManaged)/UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.InputLegacyModule" HintPath="$(ValheimManaged)/UnityEngine.InputLegacyModule.dll" Private="false" />
+  </ItemGroup>
+
+</Project>
