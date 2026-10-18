@@ -82,13 +82,14 @@ Never sent:
 Requires the .NET SDK (8 or later) and a Valheim install with BepInEx (game or dedicated server) to compile against.
 
 ```bash
-./build.sh -p:ValheimDir=/path/to/Valheim
+export VALHEIM_DIR=/path/to/Valheim
+./build.sh
 ```
 
 This produces `dist/ServerConfigSync-<version>.zip`, a Thunderstore package. Tests that run without the game:
 
 ```bash
-dotnet run --project tests/ServerConfigSync.Tests -p:ValheimDir=/path/to/Valheim
+dotnet run --project tests/ServerConfigSync.Tests
 ```
 
 ## License

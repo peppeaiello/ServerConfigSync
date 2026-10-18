@@ -16,10 +16,10 @@
 
   <!--
     Path to a Valheim install (client or dedicated server) with BepInEx.
-    Override with: dotnet build -p:ValheimDir=/path/to/Valheim
+    Set the VALHEIM_DIR environment variable, or pass -p:ValheimDir=/path/to/Valheim.
   -->
   <PropertyGroup>
-    <ValheimDir Condition="'$(ValheimDir)' == ''">/DATA/AppData/valheim-gale/server</ValheimDir>
+    <ValheimDir Condition="'$(ValheimDir)' == ''">$(VALHEIM_DIR)</ValheimDir>
     <ValheimManaged Condition="Exists('$(ValheimDir)/valheim_server_Data/Managed')">$(ValheimDir)/valheim_server_Data/Managed</ValheimManaged>
     <ValheimManaged Condition="'$(ValheimManaged)' == ''">$(ValheimDir)/valheim_Data/Managed</ValheimManaged>
     <BepInExCore>$(ValheimDir)/BepInEx/core</BepInExCore>
@@ -38,5 +38,10 @@
     <Reference Include="UnityEngine.CoreModule" HintPath="$(ValheimManaged)/UnityEngine.CoreModule.dll" Private="false" />
     <Reference Include="UnityEngine.InputLegacyModule" HintPath="$(ValheimManaged)/UnityEngine.InputLegacyModule.dll" Private="false" />
   </ItemGroup>
+
+  <Target Name="CheckValheimDir" BeforeTargets="ResolveAssemblyReferences">
+    <Error Condition="!Exists('$(ValheimManaged)/assembly_valheim.dll')"
+           Text="Valheim not found. Set VALHEIM_DIR or pass -p:ValheimDir=/path/to/Valheim (a game or dedicated server install with BepInEx)." />
+  </Target>
 
 </Project>

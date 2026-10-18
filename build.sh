@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Builds the plugin and the Thunderstore package (dist/ServerConfigSync-<version>.zip).
-# Usage: ./build.sh [-p:ValheimDir=/path/to/Valheim]
+# Usage: VALHEIM_DIR=/path/to/Valheim ./build.sh
 set -euo pipefail
 cd "$(dirname "$0")"
 
