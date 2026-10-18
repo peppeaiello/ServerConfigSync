@@ -1,10 +1,14 @@
 # Changelog
 
+## 0.1.2
+
+- Documentation only: clearer README and changelog. No code changes.
+
 ## 0.1.1
 
-- Mods that sync themselves are recognized better: Jötunn admin-only entries (the check never matched before), and mods with their own sync code named like ServerSync/ConfigSync.
-- The player's own value is read from their config file, so it is restored correctly even when another sync system had already changed it in memory.
-- The in-game message only says that server settings were applied. The guess about mods that may only read settings at startup goes to the log; `ShowStartupWarning` (off by default) shows it in game too.
+- Better detection of mods that already sync their own settings, including Jötunn admin-only entries.
+- Players' own values are always restored correctly when they disconnect, even when another mod's sync had changed them first.
+- The in-game message only says that server settings were applied. Mods that may only read settings at startup are listed in the log; `ShowStartupWarning` shows them in game too.
 
 ## 0.1.0
 

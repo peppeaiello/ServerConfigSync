@@ -19,7 +19,9 @@ fi
 
 stage=$(mktemp -d)
 trap 'rm -rf "$stage"' EXIT
-cp thunderstore/manifest.json thunderstore/icon.png README.md CHANGELOG.md "$stage/"
+cp thunderstore/manifest.json thunderstore/icon.png CHANGELOG.md "$stage/"
+# The Thunderstore page is for players and admins: leave out the section for developers.
+awk '/^## Building from source/{skip=1; next} /^## /{skip=0} !skip' README.md > "$stage/README.md"
 cp src/ServerConfigSync/bin/Release/ServerConfigSync.dll "$stage/"
 
 mkdir -p dist

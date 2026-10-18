@@ -67,7 +67,7 @@ Never sent:
 - Data is accepted only from the server the player is connected to.
 - Only **existing entries of mods that are loaded** are changed. Nothing is created.
 - Transfers are size-limited (compressed and uncompressed), and malformed data is rejected.
-- Nothing is ever written to disk or executed. If a mod saves its config while you're connected, your own values are what get written.
+- Server values are never written to disk, and nothing is ever executed. If a mod saves its config while you're connected, your own values are what get written.
 - If you change a synced setting while connected (for example in a config manager), it's saved as your value, and the server's value stays active until you leave.
 
 ## Limitations
@@ -75,7 +75,7 @@ Never sent:
 - **Mods that only read their settings at startup** (for example, ones that set up items or recipes once when the game loads) won't see values that arrive when you join. ServerConfigSync can't detect this with certainty. It writes in the log which mods with changed values don't listen for setting changes, but many of those work fine anyway because they read the value every time they use it.
 - Only the main config file of each mod (`<GUID>.cfg`) is synced. Extra `.cfg` files a mod creates itself, and YAML/JSON configs, are not.
 - Entries a mod creates only later in the game (after you join) are not synced.
-- Some mods sync their settings with their own code that can't be recognized automatically. Syncing them twice is harmless (both send the server's values, and players still get their own values back), but if you prefer, add them to `PluginList` with `SyncMode = Blacklist`.
+- Some mods sync their settings with their own code that can't always be recognized. Syncing them twice is harmless; to skip one, use `SyncMode = Blacklist`.
 
 ## Building from source
 
