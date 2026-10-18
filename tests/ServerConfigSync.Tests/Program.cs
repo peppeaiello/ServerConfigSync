@@ -26,6 +26,7 @@ internal static class Program
             Run(nameof(Filters), Filters);
             Run(nameof(ApplySaveReloadRestore), ApplySaveReloadRestore);
             Run(nameof(NewSnapshotRestoresDroppedEntries), NewSnapshotRestoresDroppedEntries);
+            Run(nameof(PlayerValueComesFromDisk), PlayerValueComesFromDisk);
         }
         finally
         {
@@ -291,6 +292,26 @@ internal static class Program
         Check(a.Value == 6 && b.Value == 1, "second snapshot: A updated, B back to the player's value");
         ClientSide.RestoreAll("test");
         Check(a.Value == 1, "A restored to the player's original value, not the first server value");
+    }
+
+    // A mod's own sync system applied the server value (in memory only) before ServerConfigSync did.
+    private static void PlayerValueComesFromDisk()
+    {
+        string path = Path.Combine(_dir, "mod3.cfg");
+        var file = new ConfigFile(path, true);
+        var speed = file.Bind("S", "Speed", 1, "");
+        speed.Value = 3; // the player's value, saved
+        file.SaveOnConfigSet = false;
+        speed.Value = 9; // the other sync system's server value, not saved
+        file.SaveOnConfigSet = true;
+        ClientSide.ResolveConfig = guid => guid == "mod3" ? file : null;
+
+        ClientSide.Apply(MakeSnapshot("mod3", ("S", "Speed", "9")));
+        Check(speed.Value == 9, "server value active");
+        file.Save();
+        Check(File.ReadAllText(path).Contains("Speed = 3"), "the player's value stays on disk");
+        ClientSide.RestoreAll("test");
+        Check(speed.Value == 3, $"restored to the value on disk (got {speed.Value})");
     }
 
     private static bool Throws(Action action)

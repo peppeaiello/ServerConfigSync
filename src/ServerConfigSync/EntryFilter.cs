@@ -55,10 +55,42 @@ namespace ServerConfigSync
                    || (!string.IsNullOrEmpty(serializedValue) && SecretValue.IsMatch(serializedValue));
         }
 
-        /// <summary>True if the plugin embeds ServerSync and registered config entries with it.</summary>
-        public static bool UsesServerSync(PluginInfo info)
+        private static readonly Regex OwnSyncTypeName = new Regex(@"ServerSync|ConfigSync",
+            RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+
+        /// <summary>
+        /// True if the plugin syncs its own settings: it embeds ServerSync and registered config entries
+        /// with it, or it has its own sync code (a type named like *ServerSync* or *ConfigSync*).
+        /// Mods with sync code named otherwise can't be recognized; admins can blacklist them.
+        /// </summary>
+        public static bool SyncsItself(PluginInfo info, out string how)
         {
             var assembly = info.Instance.GetType().Assembly;
+            if (UsesServerSync(assembly))
+            {
+                how = "ServerSync";
+                return true;
+            }
+
+            how = null;
+            try
+            {
+                foreach (var type in AccessTools.GetTypesFromAssembly(assembly))
+                {
+                    if (type.Namespace == "ServerSync" || !OwnSyncTypeName.IsMatch(type.Name)) continue;
+                    how = "own sync code";
+                    return true;
+                }
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogDebug($"Could not inspect {info.Metadata.GUID}: {e.Message}");
+            }
+            return false;
+        }
+
+        private static bool UsesServerSync(Assembly assembly)
+        {
             if (ServerSyncCache.TryGetValue(assembly, out bool cached)) return cached;
 
             bool result = false;
@@ -86,7 +118,7 @@ namespace ServerConfigSync
                 }
                 catch (Exception e)
                 {
-                    Plugin.Log.LogDebug($"Could not inspect ServerSync in {info.Metadata.GUID}: {e.Message}");
+                    Plugin.Log.LogDebug($"Could not inspect ServerSync in {assembly.GetName().Name}: {e.Message}");
                 }
             }
 
@@ -94,7 +126,10 @@ namespace ServerConfigSync
             return result;
         }
 
-        /// <summary>True for entries that Jotunn already syncs (ConfigurationManagerAttributes.IsAdminOnly).</summary>
+        /// <summary>
+        /// True for entries that Jotunn already syncs: tagged with Jotunn's own ConfigurationManagerAttributes
+        /// (not a copy of that class in another mod) with IsAdminOnly set.
+        /// </summary>
         public static bool IsJotunnAdminOnly(ConfigEntryBase entry)
         {
             var tags = entry.Description?.Tags;
@@ -103,7 +138,7 @@ namespace ServerConfigSync
             {
                 if (tag == null) continue;
                 var type = tag.GetType();
-                if (type.FullName != "Jotunn.Configs.ConfigurationManagerAttributes") continue;
+                if (type.Name != "ConfigurationManagerAttributes" || type.Assembly.GetName().Name != "Jotunn") continue;
                 object value = AccessTools.Property(type, "IsAdminOnly")?.GetValue(tag, null)
                                ?? AccessTools.Field(type, "IsAdminOnly")?.GetValue(tag);
                 if (value is bool b && b) return true;
@@ -194,9 +229,9 @@ namespace ServerConfigSync
                 ConfigFile config = info.Instance.Config;
                 if (config == null || Plugin.IsCoreConfig(config)) continue;
 
-                if (Plugin.SkipSelfSyncingMods.Value && EntryFilter.UsesServerSync(info))
+                if (Plugin.SkipSelfSyncingMods.Value && EntryFilter.SyncsItself(info, out string how))
                 {
-                    selfSyncing.Add(info.Metadata.Name);
+                    selfSyncing.Add($"{info.Metadata.Name} ({how})");
                     continue;
                 }
 
@@ -238,7 +273,7 @@ namespace ServerConfigSync
             summary.Add($"Prepared {snapshot.EntryCount} entries from {snapshot.Plugins.Count} mods for connecting players " +
                         $"(mode {Plugin.Mode.Value}; skipped {keybinds} keybinds, {jotunn} Jotunn admin-only, {excludedCount} excluded).");
             if (selfSyncing.Count > 0)
-                summary.Add($"Skipped mods that sync their own settings (ServerSync): {string.Join(", ", selfSyncing.ToArray())}");
+                summary.Add($"Skipped mods that sync their own settings: {string.Join(", ", selfSyncing.ToArray())}");
             if (withheldSecrets.Count > 0)
                 summary.Add($"Withheld entries that look like secrets (add them to AllowedSecretEntries to send them): {string.Join(", ", withheldSecrets.ToArray())}");
             if (Plugin.VerboseLogging.Value)

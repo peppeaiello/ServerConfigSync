@@ -62,7 +62,7 @@ namespace ServerConfigSync
             SyncKeybinds = Config.Bind(server, "SyncKeybinds", false,
                 "If false, keyboard shortcuts and hotkeys stay as each player set them.");
             SkipSelfSyncingMods = Config.Bind(server, "SkipSelfSyncingMods", true,
-                "Skip mods that already sync their own settings (ServerSync) and Jotunn entries marked admin-only, so the two systems do not fight.");
+                "Skip mods that already sync their own settings (with ServerSync, or with their own code when it can be recognized) and Jotunn entries marked admin-only. Mods whose sync code cannot be recognized are synced too; blacklist them if you prefer.");
             AllowedSecretEntries = Config.Bind(server, "AllowedSecretEntries", "",
                 "Entries that look like secrets (webhooks, tokens, passwords, URLs...) are never sent. List here, with the same format as ExcludedEntries, the ones you really want to send.");
             RequireClientMod = Config.Bind(server, "RequireClientMod", false,

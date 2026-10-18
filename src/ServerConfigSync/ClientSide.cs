@@ -110,6 +110,7 @@ namespace ServerConfigSync
                 try
                 {
                     var desired = new Dictionary<ConfigEntryBase, KeyValuePair<string, string>>();
+                    var onDisk = new Dictionary<ConfigFile, Dictionary<ConfigDefinition, string>>();
                     foreach (var plugin in snapshot.Plugins)
                     {
                         string guid = plugin.Key;
@@ -148,7 +149,7 @@ namespace ServerConfigSync
                         var entry = pair.Key;
                         if (!TrackedEntries.TryGetValue(entry, out var tracked))
                         {
-                            tracked = new Tracked { Guid = pair.Value.Key, Local = entry.GetSerializedValue() };
+                            tracked = new Tracked { Guid = pair.Value.Key, Local = PlayerValue(entry, onDisk) };
                             TrackedEntries[entry] = tracked;
                         }
                         tracked.Server = pair.Value.Value;
@@ -204,6 +205,52 @@ namespace ServerConfigSync
                         ? $"Some mods may only read these settings at startup: {string.Join(", ", maybeStartup.ToArray())}"
                         : $"{maybeStartup.Count} mod(s) may only read these settings at startup (see the log)");
                 }
+            }
+        }
+
+        /// <summary>
+        /// The player's own value is the one in their file. The value in memory may already come from the
+        /// server through a mod's own sync system, which would then be "restored" and saved as theirs.
+        /// </summary>
+        private static string PlayerValue(ConfigEntryBase entry, Dictionary<ConfigFile, Dictionary<ConfigDefinition, string>> cache)
+        {
+            var file = entry.ConfigFile;
+            if (!cache.TryGetValue(file, out var values))
+            {
+                values = ReadFile(file.ConfigFilePath);
+                cache[file] = values;
+            }
+            return values != null && values.TryGetValue(entry.Definition, out var value) ? value : entry.GetSerializedValue();
+        }
+
+        // Same parsing as ConfigFile.Reload.
+        private static Dictionary<ConfigDefinition, string> ReadFile(string path)
+        {
+            try
+            {
+                if (!File.Exists(path)) return null;
+                var values = new Dictionary<ConfigDefinition, string>();
+                string section = string.Empty;
+                foreach (var rawLine in File.ReadAllLines(path))
+                {
+                    string line = rawLine.Trim();
+                    if (line.StartsWith("#")) continue;
+                    if (line.StartsWith("[") && line.EndsWith("]"))
+                    {
+                        section = line.Substring(1, line.Length - 2);
+                        continue;
+                    }
+                    var parts = line.Split(new[] { '=' }, 2);
+                    if (parts.Length != 2) continue;
+                    try { values[new ConfigDefinition(section, parts[0].Trim())] = parts[1].Trim(); }
+                    catch (ArgumentException) { }
+                }
+                return values;
+            }
+            catch (Exception e)
+            {
+                Plugin.Log.LogWarning($"Could not read {Path.GetFileName(path)}: {e.Message}");
+                return null;
             }
         }
 

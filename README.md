@@ -30,7 +30,7 @@ The settings are in `BepInEx/config/peppeaiello.ServerConfigSync.cfg`. The serve
 | `PluginList` | *(empty)* | Comma-separated plugin GUIDs for `Whitelist`/`Blacklist`. A mod's GUID is written at the top of its `.cfg` file. |
 | `ExcludedEntries` | *(empty)* | Comma-separated entries that are never synced: `GUID`, `GUID:Section` or `GUID:Section:Key`, with `*` as a wildcard. Example: `ishid4.mods.betterarchery:Bow Zoom:*` |
 | `SyncKeybinds` | `false` | When off, hotkeys and keyboard shortcuts stay as each player set them. |
-| `SkipSelfSyncingMods` | `true` | Skip mods that already sync their settings with ServerSync, and Jötunn entries marked admin-only, so the two systems don't fight. |
+| `SkipSelfSyncingMods` | `true` | Skip mods that already sync their settings (with ServerSync, or with their own sync code when it can be recognized) and Jötunn entries marked admin-only. |
 | `AllowedSecretEntries` | *(empty)* | Entries that look like secrets are never sent (see below). List here, in the `ExcludedEntries` format, the ones you really want to send. |
 | `RequireClientMod` | `false` | Refuse players who don't have ServerConfigSync. |
 | `LiveUpdates` | `true` | Reload a `.cfg` file edited while the server runs and push the new values to connected players. |
@@ -75,6 +75,7 @@ Never sent:
 - **Mods that only read their settings at startup** (for example, ones that set up items or recipes once when the game loads) won't see values that arrive when you join. ServerConfigSync can't detect this with certainty. It writes in the log which mods with changed values don't listen for setting changes, but many of those work fine anyway because they read the value every time they use it.
 - Only the main config file of each mod (`<GUID>.cfg`) is synced. Extra `.cfg` files a mod creates itself, and YAML/JSON configs, are not.
 - Entries a mod creates only later in the game (after you join) are not synced.
+- Some mods sync their settings with their own code that can't be recognized automatically. Syncing them twice is harmless (both send the server's values, and players still get their own values back), but if you prefer, add them to `PluginList` with `SyncMode = Blacklist`.
 
 ## Building from source
 
