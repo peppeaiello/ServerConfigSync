@@ -19,7 +19,7 @@ namespace ServerConfigSync
     {
         public const string Guid = "peppeaiello.ServerConfigSync";
         public const string Name = "ServerConfigSync";
-        public const string Version = "0.1.0";
+        public const string Version = "0.1.1";
 
         internal static Plugin Instance;
         internal static ManualLogSource Log;
@@ -37,7 +37,7 @@ namespace ServerConfigSync
 
         // Client settings
         internal static ConfigEntry<bool> AcceptServerConfig;
-        internal static ConfigEntry<bool> ShowRestartWarning;
+        internal static ConfigEntry<bool> ShowStartupWarning;
         internal static ConfigEntry<bool> ListAffectedMods;
 
         // Debug
@@ -73,8 +73,8 @@ namespace ServerConfigSync
             const string client = "2 - Client";
             AcceptServerConfig = Config.Bind(client, "AcceptServerConfig", true,
                 "Apply the settings sent by the server while connected. Your own config files are never modified and your values come back when you disconnect.");
-            ShowRestartWarning = Config.Bind(client, "ShowRestartWarning", true,
-                "Show an in-game message when server settings were applied to mods that may only read their settings at startup.");
+            ShowStartupWarning = Config.Bind(client, "ShowStartupWarning", false,
+                "Also show in game which mods might only read their settings at startup. This is a guess and often wrong (many mods read the value every time and work fine), so by default it only goes to the log.");
             ListAffectedMods = Config.Bind(client, "ListAffectedMods", true,
                 "Include the names of the affected mods in the in-game message.");
 

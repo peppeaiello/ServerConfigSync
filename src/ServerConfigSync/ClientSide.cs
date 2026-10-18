@@ -192,13 +192,13 @@ namespace ServerConfigSync
             maybeStartup.Sort(StringComparer.OrdinalIgnoreCase);
 
             if (maybeStartup.Count > 0)
-                Plugin.Log.LogInfo($"These mods do not listen for setting changes and may only read some settings at startup: {string.Join(", ", maybeStartup.ToArray())}");
+                Plugin.Log.LogInfo($"These mods do not listen for setting changes; if a server value seems to have no effect, they may only read it at startup: {string.Join(", ", maybeStartup.ToArray())}");
 
             lock (PendingMessages)
             {
                 PendingMessages.Clear();
                 PendingMessages.Add($"Server settings applied: {differingCount} value(s) in {differing.Count} mod(s)");
-                if (Plugin.ShowRestartWarning.Value && maybeStartup.Count > 0)
+                if (Plugin.ShowStartupWarning.Value && maybeStartup.Count > 0)
                 {
                     PendingMessages.Add(Plugin.ListAffectedMods.Value
                         ? $"Some mods may only read these settings at startup: {string.Join(", ", maybeStartup.ToArray())}"

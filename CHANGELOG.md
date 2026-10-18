@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- The in-game message only says that server settings were applied. The guess about mods that may only read settings at startup goes to the log; `ShowStartupWarning` (off by default) shows it in game too.
+
 ## 0.1.0
 
 - First test release: the server's BepInEx config values for any mod are applied in memory on players' games while connected, and restored when they disconnect.

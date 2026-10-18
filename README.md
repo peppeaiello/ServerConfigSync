@@ -42,8 +42,8 @@ When the server starts, its log says how many entries from how many mods will be
 | Setting | Default | Description |
 |---|---|---|
 | `AcceptServerConfig` | `true` | Apply the server's settings while connected. |
-| `ShowRestartWarning` | `true` | Show a message when settings were applied to mods that may only read them at startup. |
-| `ListAffectedMods` | `true` | Name those mods in the message. |
+| `ShowStartupWarning` | `false` | Also show in game which mods might only read their settings at startup (see Limitations). It's a guess, so by default it only goes to the log. |
+| `ListAffectedMods` | `true` | Name those mods in that message. |
 
 ### Debug
 
@@ -72,7 +72,7 @@ Never sent:
 
 ## Limitations
 
-- **Mods that only read their settings at startup** (for example, ones that set up items or recipes once when the game loads) won't see values that arrive when you join. ServerConfigSync can't detect this with certainty. It warns when a mod with changed values doesn't listen for setting changes, but some of those mods work fine anyway because they read the value every time they use it.
+- **Mods that only read their settings at startup** (for example, ones that set up items or recipes once when the game loads) won't see values that arrive when you join. ServerConfigSync can't detect this with certainty. It writes in the log which mods with changed values don't listen for setting changes, but many of those work fine anyway because they read the value every time they use it.
 - Only the main config file of each mod (`<GUID>.cfg`) is synced. Extra `.cfg` files a mod creates itself, and YAML/JSON configs, are not.
 - Entries a mod creates only later in the game (after you join) are not synced.
 

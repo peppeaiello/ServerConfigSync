@@ -43,7 +43,7 @@ internal static class Program
         BepInEx.Logging.Logger.Listeners.Add(listener);
         var settings = new ConfigFile(Path.Combine(_dir, "settings.cfg"), false);
         Plugin.VerboseLogging = settings.Bind("d", "VerboseLogging", true, "");
-        Plugin.ShowRestartWarning = settings.Bind("c", "ShowRestartWarning", true, "");
+        Plugin.ShowStartupWarning = settings.Bind("c", "ShowStartupWarning", true, "");
         Plugin.ListAffectedMods = settings.Bind("c", "ListAffectedMods", true, "");
         Plugin.AcceptServerConfig = settings.Bind("c", "AcceptServerConfig", true, "");
 
