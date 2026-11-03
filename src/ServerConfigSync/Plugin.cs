@@ -19,7 +19,7 @@ namespace ServerConfigSync
     {
         public const string Guid = "Manke.ServerConfigSync";
         public const string Name = "ServerConfigSync";
-        public const string Version = "0.1.3";
+        public const string Version = "0.1.4";
 
         // GUID used up to 0.1.2; its config file is carried over once.
         private const string OldGuid = "peppeaiello.ServerConfigSync";

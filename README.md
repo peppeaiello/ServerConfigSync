@@ -1,5 +1,7 @@
 # ServerConfigSync
 
+[![Support me on Ko-fi](https://github.com/peppeaiello/ServerConfigSync/raw/main/docs/kofi-button.png)](https://ko-fi.com/peppeaiello)
+
 Make every player on your Valheim server use **the server's settings for any mod**, even mods that have no server sync of their own.
 
 Many mods read their settings from a BepInEx `.cfg` file on each player's PC. Without a sync system, every player can have different values: stack sizes, arrow speed, crafting rules, and so on. Some mod authors add sync support (ServerSync, Jötunn), many don't. ServerConfigSync does it for all of them, with nothing to change in the mods themselves.
